@@ -1,25 +1,30 @@
 # COMP3005 Final Project — Health & Fitness Club Management System
 
-This project is a TypeScript, terminal-based application that utilizes PostgreSQL as a database, to carry out the functionalities of a Health & Fitness Club Management System.
+This project is a TypeScript, terminal-based application that uses PostgreSQL as its database to support the core operations of a Health & Fitness Club Management System.
 
-There are three essential roles: Member, Trainer, and Admin. Each has their own menu and differing functionalities.
+There are three main roles: Member, Trainer, and Admin. Each with their own menu and set of functionalities.
 
-The database was designed using an ER model, converted to a relational schema, normalized to 3NF, and implemented using PostgreSQL DDL. Additional features include triggers, views, sample data inserts, and indexes, as required by the Final Project specification.
+The database was designed using an ER model, converted into a relational schema, normalized to 3NF, and implemented using PostgreSQL. As required by the Final Project spec, the system also includes triggers, views, indexes, and a full set of sample data.
 
-The project consists of an app folder where the source code for the project lives. A docs folder which is composed of the ERD.pdf, consisting of the ER model and its relational schema counterpart (It is here that it has been noted that the data is already in 3NF). An sql folder which has the DDL and DML SQL files that can be imported and executed in pgAdmin.
+Project folder structure:
+
+    an app folder containing all source code,
+
+    a docs folder containing the ERD.pdf and relational schema (and the note confirming the schema is already in 3NF),
+
+    and an sql folder containing the DDL and DML files used to build and populate the database in pgAdmin.
+
 
 # Prerequisites (must be performed before running source code)
 
-1) Node.js and npm installed
+    Node.js and npm installed
 
     https://nodejs.org
 
-2) PostgreSQL and pgAdmin installed
+    PostgreSQL and pgAdmin installed
+
 
 # How to Install and Run
-
-How to Install and Run
-
 
 1) Clone the repository
 
@@ -27,20 +32,30 @@ Open a terminal and run:
 
 git clone https://github.com/dan1306/COMP_3005_FINAL_PROJECT.git
 
-2) CD into the app directory and install dependencies
+2) Install dependencies
+
+Navigate into the app directory and run:
 
 npm install
 
-3) Create your database and execute the DDL and DML files in the sql folder,
-in your created database in pgadmin.
+3) Set up the database
 
-4) A .env file in the app directory with:
-database_password = your_database_password_in_quotes (e.g. "password")
-database_name = your_database_name_in_quotes (e.g. "final")
+Create your database in pgAdmin, then execute both DDL.sql and DML.sql from the sql folder.
 
-5) Start the application by running "npm run start" in the app directory
+4) Create a .env file in the app directory
 
-You will be prompted to choose:
+It should contain:
+
+database_password = "your_postgres_password"
+database_name = "your_database_name"
+
+5) Run the application
+
+Inside the app directory:
+
+npm run start
+
+You will then be prompted to choose:
 
     Member View
 
@@ -49,7 +64,7 @@ You will be prompted to choose:
     Admin View
 
 
-Each role contains a set of operations according to the project specification.
+Each role comes with the operations required by the project specification.
 
 
 # What the Application Does
