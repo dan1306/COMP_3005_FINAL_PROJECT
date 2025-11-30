@@ -10,7 +10,7 @@ Project folder structure:
 
     an app folder containing all source code,
 
-    a docs folder containing the ERD.pdf and relational schema (and the note confirming the schema is already in 3NF),
+    a docs folder containing the ERD.pdf, which has the ER model, relational schema (and the note confirming the schema is already in 3NF), and, mapping table,
 
     and an sql folder containing the DDL and DML files used to build and populate the database in pgAdmin.
 
@@ -78,6 +78,8 @@ Member View
     Members can:
 
         Register as a new member
+
+        Log in as an existing member
 
         Update account details
 
