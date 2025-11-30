@@ -26,34 +26,38 @@ Project folder structure:
 
 # How to Install and Run
 
-1) Clone the repository
+Clone the repository
 
-Open a terminal and run:
+    Open a terminal and run:
 
-git clone https://github.com/dan1306/COMP_3005_FINAL_PROJECT.git
+    git clone https://github.com/dan1306/COMP_3005_FINAL_PROJECT.git
 
-2) Install dependencies
 
-Navigate into the app directory and run:
+Install dependencies
 
-npm install
+    Navigate into the app directory and run:
 
-3) Set up the database
+    npm install
 
-Create your database in pgAdmin, then execute both DDL.sql and DML.sql from the sql folder.
 
-4) Create a .env file in the app directory
+Set up the database
 
-It should contain:
+    Create your database in pgAdmin, then execute both DDL.sql and DML.sql from the sql folder.
 
-database_password = "your_postgres_password"
-database_name = "your_database_name"
 
-5) Run the application
+Create a .env file in the app directory
 
-Inside the app directory:
+    It should contain:
 
-npm run start
+    database_password = "your_postgres_password"
+    database_name = "your_database_name"
+
+
+Run the application
+
+    Inside the app directory:
+
+    npm run start
 
 You will then be prompted to choose:
 
@@ -69,57 +73,57 @@ Each role comes with the operations required by the project specification.
 
 # What the Application Does
 
-1) Member View
+Member View
 
-Members can:
+    Members can:
 
-    Register as a new member
+        Register as a new member
 
-    Update account details
+        Update account details
 
-    Log health metrics and view health history
+        Log health metrics and view health history
 
-    Create fitness goals and mark them as achieved
+        Create fitness goals and mark them as achieved
 
-    View all group classes
+        View all group classes
 
-    Register for and cancel class enrollments
+        Register for and cancel class enrollments
 
 
 All inputs are validated and written to the database.
 
-2) Trainer View
+Trainer View
 
-Trainers can:
+    Trainers can:
 
-    Log in using their email
+        Log in using their email
 
-    Add availability
+        Add availability
 
-    View their scheduled upcoming classes
+        View their scheduled upcoming classes
 
-    Look up member fitness goals and recent health metrics
+        Look up member fitness goals and recent health metrics
 
 
 (Trainers cannot modify member data thought they may look them up.)
 
-3) Admin View
+Admin View
 
-Admins can:
+    Admins can:
 
-    Create trainers
+        Create trainers
 
-    Add rooms
+        Add rooms
 
-    Schedule group class sessions
+        Schedule group class sessions
 
-    Update class session times
+        Update class session times
 
-    Cancel classes
+        Cancel classes
 
-    Create and associate equipment with rooms
+        Create and associate equipment with rooms
 
-    View trainer availability and all scheduled classes
+        View trainer availability and all scheduled classes
 
 
 All scheduling rules (availability, conflicts, room overlaps) are enforced through the backend logic and database constraints + triggers.
@@ -131,7 +135,7 @@ All scheduling rules (availability, conflicts, room overlaps) are enforced throu
 
 2) Relational Schema included
 
-3) Fully normalized (3NF) — justified in the report
+3) Fully normalized (3NF) — justified in the relational schema
 
 4) DDL.sql with:
 
@@ -141,13 +145,13 @@ All scheduling rules (availability, conflicts, room overlaps) are enforced throu
 
     CHECK constraints
 
-    M:N relationship bridge (Enrollment)
+    M:N relationship (Enrollment)
 
-    Triggers validating time ranges
+    Triggers validation
 
-    Indexes for performance
+    Indexes 
 
-    A view (upComingClasses)
+    A View 
 
 
 5) DML.sql with sample records
@@ -172,3 +176,4 @@ Matching requirements listed in the project rubric.
 2) All validation is handled in TypeScript before running SQL commands.
 
 3) All database actions are visible through pgAdmin during testing.
+## End of README
