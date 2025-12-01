@@ -166,9 +166,9 @@ Matching requirements listed in the project rubric.
 
 # Video Demonstration And Link To Repo
 
-1) Video Link: 
-2) Link To Main Submitted Projecct Repo:
-3) This is the repo that contains all my commit history in regards to source code: 
+1) Video Link: https://youtu.be/_JHBXdqZvIc 
+2) Link To Main Submitted Project Repo: https://github.com/dan1306/COMP_3005_FINAL_PROJECT
+3) This is the repo that contains all my commit history in regards to source code: https://github.com/dan1306/COMP3005_FINAL_PROJECT 
 
 
 # Notes
