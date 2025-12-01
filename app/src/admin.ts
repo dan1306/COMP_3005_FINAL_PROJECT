@@ -9,11 +9,12 @@ export async function mainAdminFunction(){
         console.log("\n--- Admin View ---\n");
         console.log(`1) Create A Trainer.\n`);
         console.log(`2) Add Room.\n`);
-        console.log(`3) Create and associate a Trainer with a class session.\n`);
+        console.log(`3) Create a Group class session and associate it with a Trainer.\n`);
         console.log(`4) Cancel Group Class Session.\n`);
         console.log(`5) Update Group Class session start and end time.\n`);
         console.log(`6) Create and associate equipment to a room.\n`);
-        console.log("7) Exit Admin View.\n");
+        console.log(`7) View Trainer Availability and Class Schedule.\n`)
+        console.log("8) Exit Admin View.\n");
         input = adminReadline.question("Select an option: ").trim();
         console.log("")
     
@@ -37,7 +38,10 @@ export async function mainAdminFunction(){
                 await createAndAssociateEquipment();
                 break;
             case "7":
-                console.log("Exiting Admin View.")
+                await viewTrainerAvailabilityAndClassSessions();
+                break;
+            case "8":
+                console.log("Exiting Admin View.");
                 return
             default:
                 console.log("Invalid Option");
@@ -86,9 +90,7 @@ async function createAndAssociateEquipment() {
             }
         }
 
-        let equipmentName = adminReadline.question(
-            "Enter equipment name (e.g. dumbells #4): "
-        ).trim();
+        let equipmentName = adminReadline.question("Enter equipment name (e.g. dumbells #4): ").trim();
         while (equipmentName === "") {
             equipmentName = adminReadline.question("Invalid. Enter equipment name: ").trim();
         }
@@ -110,6 +112,7 @@ async function createAndAssociateEquipment() {
 
 
 async function updateClassSession() {
+    await viewTrainerAvailabilityAndClassSessions();
     console.log("\n--- Update Class Session Start And End Time ---\n");
 
     try {
@@ -253,7 +256,7 @@ async function cancelClassSession() {
         );
 
         if (result.rowCount === 0) {
-            console.log("There are no class sessions  availale to cancel.\n");
+            console.log("There are no class sessions  available to cancel.\n");
             return;
         }
 
@@ -307,6 +310,7 @@ async function cancelClassSession() {
 }
 
 async function createClassSession() {
+    await viewTrainerAvailabilityAndClassSessions();
     console.log("\n--- Create a New Class Session And Assign An Available Room And Trainer ---\n");
 
     let sessionname = adminReadline.question("Enter a name for the session: ").trim();
@@ -321,7 +325,7 @@ async function createClassSession() {
 
     let sessionendtime = adminReadline.question("Enter an end time (in the form YYYY-MM-DD HH:MM): ").trim();
     while (!validateDateTime(sessionendtime)) {
-        sessionendtime = adminReadline.question("Wrong format. Enter a start time (e.g. 2025-12-01 13:00): ").trim();
+        sessionendtime = adminReadline.question("Wrong format. Enter a end time (e.g. 2025-12-01 13:00): ").trim();
     }
 
     if (new Date(sessionstarttime) >= new Date(sessionendtime)) {
@@ -531,5 +535,67 @@ async function adminAddATrainer() {
         console.log("   New Trainer added successfully!\n");
     } catch (err: any) {
         console.log("   Error:", err.message);
+    }
+}
+
+async function viewTrainerAvailabilityAndClassSessions() {
+    console.log("\n--- Trainer Availability Schedule ---\n");
+
+    try {
+        let result = await pool.query(
+            `SELECT *
+             FROM traineravailability
+             ORDER BY availabilitystarttime`
+        );
+
+        if (result.rowCount === 0) {
+            console.log("No availabilities to show.\n");
+        } else {
+            for (let i of result.rows) {
+                console.log(
+                    `AvailabilityID: ${i.availabilityid} | ` +
+                    `TrainerID: ${i.trainerid} | ` +
+                    `Start: ${i.availabilitystarttime} | ` +
+                    `End:   ${i.availabilityendtime}\n`
+                );
+            }
+        }
+
+        let result1 = await pool.query(
+            `SELECT 
+                c.classsessionid,
+                c.sessionname,
+                c.sessionstarttime,
+                c.sessionendtime,
+                c.trainerid,
+                t.firstname || ' ' || t.lastname AS trainer_name,
+                r.building,
+                r.roomnumber
+             FROM classsession c
+             JOIN trainer t ON c.trainerid = t.trainerid
+             JOIN room r ON c.roomid = r.roomid
+             ORDER BY c.sessionstarttime;`
+        );
+
+        if (result1.rowCount === 0) {
+            console.log("\nNo group classes are scheduled.\n");
+            return;
+        }
+
+        console.log("\n--- Group Classes Scheduled ---\n");
+        for (let c of result1.rows) {
+            console.log(
+                `ClassID: ${c.classsessionid}\n` +
+                `TrainerID: ${c.trainerid}\n` +
+                `Name: ${c.sessionname}\n` +
+                `Trainer: ${c.trainer_name}\n` +
+                `Room: ${c.building} ${c.roomnumber}\n` +
+                `Start: ${c.sessionstarttime}\n` +
+                `End: ${c.sessionendtime}\n`
+            );
+        }
+
+    } catch (err: any) {
+        console.log(`Error: ${err.message}`);
     }
 }

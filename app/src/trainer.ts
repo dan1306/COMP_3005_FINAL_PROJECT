@@ -40,10 +40,10 @@ export async function mainTrainerFunction() {
 
 
 async function trainerLogin() {
-    let email: string = trainerReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();
+    let email: string = trainerReadline.question("What is your email (in the format email@gmail.com): ").trim();
     console.log("");
     while(!validateEmail(email)){
-        email = trainerReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();
+        email = trainerReadline.question("What is your email (in the format email@gmail.com): ").trim();
         console.log("");    
     }
 
@@ -104,6 +104,7 @@ async function trainerView(trainerData: trainer) {
 }
 
 async function viewUpcomingClasses(trainerid: number) {
+    await viewTrainerAvailability(trainerid);
     try {
         let result = await pool.query(
             `SELECT 
@@ -238,9 +239,11 @@ async function memberLookup() {
         console.log("Query cannot be empty.\n");
         return;
     }
+    console.log("");
 
     try {
-        console.log("---\n Searching for a member matchc (case-insensitive) ---\n");
+        console.log("---\n Searching for a member with the provided name (case-insensitive) ---\n");
+
         let foundMembers = await pool.query(
             `SELECT *
              FROM member

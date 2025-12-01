@@ -27,7 +27,7 @@ export async function mainMemberFunction() {
         console.log(`1) Register as a new Member.\n`);
         console.log(`2) Log in as an existing Member.\n`);
         console.log("3) Exit.\n")
-        input = memberReadline.question("Select an option:");
+        input = memberReadline.question("Select an option: ");
     
         switch(input){
             case "1":
@@ -49,9 +49,9 @@ export async function mainMemberFunction() {
 };
 
 async function logIn() {
-    let email: string = memberReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();
+    let email: string = memberReadline.question("What is your email (in the format email@gmail.com): ").trim();
     while(!validateEmail(email)){
-        email = memberReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();    
+        email = memberReadline.question("What is your email (in the format email@gmail.com): ").trim();    
     }
 
     try{
@@ -77,7 +77,7 @@ async function memberView(memberData: Member) {
     // console.log(memberData);    
     let option: string = ""; 
 
-    while(option !== "8"){
+    while(option !== "5"){
         
         console.log("1) Update Account Details.\n");
         console.log("2) Fitness Goals Operations.\n");
@@ -103,7 +103,7 @@ async function memberView(memberData: Member) {
                 await healthHistory(memberData.memberid);
                 break;
             case "4":
-                groupClassOperations(memberData.memberid);
+                await groupClassOperations(memberData.memberid);
                 break;
             case "5":
                 console.log("Logging out...\n");
@@ -190,7 +190,7 @@ async function viewAndUpdateFitnessGoal(memberid: number) {
             return;
         }
 
-        console.log(result)
+        // console.log(result)
 
         for(let g of result.rows){
             if(g.achieved){
@@ -215,7 +215,7 @@ async function viewAndUpdateFitnessGoal(memberid: number) {
         };
 
         let updateOption: string = memberReadline.question("Enter a GoalID to update its status or type 'Exit' or simply type nothing: ").trim();
-        if(updateOption !== "" || updateOption.toLowerCase() !== "exit" ){
+        if(updateOption !== "" && updateOption.toLowerCase() !== "exit" ){
          await updateStatusOfFitnessGoal(memberid, updateOption);   
         }
 
@@ -276,13 +276,13 @@ async function updateStatusOfFitnessGoal(memberid: number, goalid: string){
 async function healthHistory(memberid: number) {
     let option: string = ""; 
 
-    while(option !== "4"){
+    while(option !== "3"){
         console.log("\n--- Health Metric Operations ---\n");
         console.log("1) Log New Health Metric.\n");
         console.log("2) view Health History.\n");    
         console.log("3) Exit.\n");
         
-        option = memberReadline.question("Select an option (1-4): ").trim();
+        option = memberReadline.question("Select an option (1-3): ").trim();
         switch(option){
             case "1":
                 await recordHealthMetric(memberid);
@@ -318,7 +318,7 @@ async function viewHealthHistory(memberid: number) {
 
         console.log("\n--- Your Health Metrics ---\n");
         for(let i of result.rows){
-            console.log(`MetricID: ${i.metricID}`);
+            console.log(`MetricID: ${i.metricid}`);
             console.log(`Date Recorded: ${i.daterecorded}`);
             console.log(`Time Recorded: ${i.timerecorded}`);
             console.log(`Height (in feet): ${i.heightfeet}`);
@@ -341,7 +341,7 @@ async function groupClassOperations(memberid: number){
         console.log("\n--- Group Classes Functionality ---\n");
         console.log("1) Group Class Registration.\n");
         console.log("2) Cancel Group Class Registration.\n");    
-        console.log("3) View Group Upcoming Classes.\n");
+        console.log("3) View Classes You Have Enrolled In.\n");
         console.log("4) Exit.\n");
         
         option = memberReadline.question("Select an option (1-4): ").trim();
@@ -353,7 +353,8 @@ async function groupClassOperations(memberid: number){
                 await cancelClassRegistration(memberid);
                 break;
             case "3":
-                // View upcoming group classes
+                // Classes you have enrolled in
+                await enrolledGroupClasses(memberid);
                 break;
             case "4":
                 console.log("Exiting...")
@@ -365,6 +366,73 @@ async function groupClassOperations(memberid: number){
     }
  
 }
+
+async function enrolledGroupClasses(memberid: number){
+     try {
+        const result = await pool.query(
+               `SELECT 
+                c.classsessionid,
+                c.sessionname,
+                c.sessionstarttime,
+                c.sessionendtime,
+                e.enrolledat,
+                r.building,
+                r.roomnumber,
+
+                t.firstname || ' ' || t.lastname AS trainer_name
+
+
+                FROM enrollment e
+                JOIN classsession c  
+                ON c.classsessionid = e.classsessionid
+                JOIN room r 
+                ON c.roomid = r.roomid
+                JOIN trainer t 
+                    ON c.trainerid = t.trainerid
+
+                WHERE e.memberid = $1
+
+                GROUP BY
+                c.classsessionid,
+                c.sessionname,
+                c.sessionstarttime,
+                c.sessionendtime,
+                e.enrolledat,
+                r.building,
+                r.roomnumber,
+                r.capacity,
+                t.firstname, t.lastname
+
+                ORDER BY c.sessionstarttime;
+             `,
+            [memberid]
+        );
+
+        if (result.rows.length === 0) {
+            console.log("You have not registered in any classes.\n");
+            return;
+        }
+
+        console.log("\n--- Classes you are registered in ---\n");
+        for(let i of result.rows){
+            console.log(
+                `classID: ${i.classsessionid}\n` +
+                `Name: ${i.sessionname}\n` +
+                `Trainer: ${i.trainer_name}\n` +
+                `Room: ${i.building} - ${i.roomnumber}\n` +
+                `Time Enrolled: ${i.enrolledat}\n` +
+                `Start: ${i.sessionstarttime}\n` +
+                `End: ${i.sessionendtime}\n` 
+            );
+        };
+
+   
+    }catch(e: any){
+        console.log(`Error: ${e.message}`)
+    }
+}
+
+
 async function cancelClassRegistration(memberid: number) {
     try {
         const result = await pool.query(
@@ -496,7 +564,7 @@ async function registerForAClass(memberid: number) {
         );
 
         if (result.rows.length === 0) {
-            console.log("No classes are currently scheduled at this tine, try again at a later time.\n");
+            console.log("No classes are currently scheduled at this time, try again at a later time.\n");
             return;
         }
 
@@ -644,7 +712,7 @@ async function updatelastname(memberid: number,lname: string): Promise<boolean>{
         console.log("Last name updated successfully.\n");
         updated = true;
     } catch (err: any) {
-        console.log("\Failed to update last name:", err.message, "\n");
+        console.log("\n Failed to update last name: ", err.message, " \n");
     }
     return updated
 }
@@ -744,15 +812,15 @@ async function createNewMember(){
     while(!validatePhoneNumber(phoneNumber)) {
          phoneNumber= memberReadline.question("What is your phone number (in the format 123-456-7891): ").trim();
     }
-    let email: string = memberReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();
+    let email: string = memberReadline.question("What is your email (in the format email@gmail.com): ").trim();
     while(!validateEmail(email)){
-        email = memberReadline.question("What is your email (in the format myEmail@gmail.com): ").trim();    
+        email = memberReadline.question("What is your email (in the format email@gmail.com): ").trim();    
     }
     
     try{
         console.log("Adding new member...\n")
         await pool.query(
-            `INSERT INTO member (firstName, lastName, dateOfBirth, gender, phoneNumber, email)
+            `INSERT INTO member (firstname, lastname, dateofbirth, gender, phonenumber, email)
             VALUES ($1, $2, $3, $4, $5, $6)`,
             [fName, lName, dateOfBirth, gender, phoneNumber, email]
         );
